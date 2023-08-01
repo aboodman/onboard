@@ -1,6 +1,6 @@
 import "./App.css";
 import { Reflect } from "@rocicorp/reflect/client";
-import { mutators } from "../reflect/mutators";
+import { mutators } from "../reflect";
 import { useSubscribe } from "replicache-react";
 
 const socketOrigin: string | undefined = import.meta.env.VITE_WORKER_URL;
