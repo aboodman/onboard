@@ -1,20 +1,35 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
 import "./App.css";
+import { Reflect } from "@rocicorp/reflect/client";
+import { mutators } from "../reflect/mutators";
+import { useSubscribe } from "replicache-react";
+
+const socketOrigin: string | undefined = import.meta.env.VITE_WORKER_URL;
+if (socketOrigin === undefined || socketOrigin === "") {
+  throw new Error("VITE_WORKER_URL required");
+}
+
+const r = new Reflect({
+  roomID: "test",
+  socketOrigin,
+  userID: "test",
+  mutators,
+});
 
 function App() {
-  const [count, setCount] = useState(0);
+  const count = useSubscribe(
+    r,
+    async (tx) => {
+      return ((await tx.get("count")) as number) ?? 0;
+    },
+    0,
+    [r]
+  );
 
   return (
     <>
-      <div>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
+        <button onClick={() => r.mutate.increment({ key: "count", delta: 1 })}>
           count is {count}
         </button>
         <p>
